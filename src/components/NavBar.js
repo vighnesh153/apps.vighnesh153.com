@@ -2,7 +2,7 @@ import React from 'react';
 
 import Cookie from 'js-cookie';
 
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';

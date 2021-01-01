@@ -1,8 +1,9 @@
 import React from "react";
 
+import useTheme from "@material-ui/core/styles/useTheme";
+
 import NavBar from "./NavBar";
 import ProjectList from "./projects";
-import {useTheme} from "@material-ui/core/styles";
 
 function App() {
   const theme = useTheme();
