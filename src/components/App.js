@@ -1,12 +1,22 @@
 import React from "react";
 
 import NavBar from "./NavBar";
+import ProjectList from "./ProjectList";
+import {useTheme} from "@material-ui/core/styles";
 
 function App() {
+  const theme = useTheme();
+
   return (
-    <div className="App">
+    <div
+      style={{
+        height: '100%',
+        backgroundColor: theme.palette.background.default,
+        overflow: 'auto',
+      }}
+    >
       <NavBar />
-      Hello
+      <ProjectList />
     </div>
   );
 }

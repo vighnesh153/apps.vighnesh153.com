@@ -53,7 +53,7 @@ export default function NavBar() {
       <AppBar position="static">
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
-            Apps by &nbsp;
+            Apps by&nbsp;
             <span className={classes.onlySmallScreen}>RV</span>
             <span className={classes.aboveSmallScreen}>Vighnesh</span>
           </Typography>
