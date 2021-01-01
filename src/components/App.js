@@ -1,7 +1,7 @@
 import React from "react";
 
 import NavBar from "./NavBar";
-import ProjectList from "./ProjectList";
+import ProjectList from "./projects";
 import {useTheme} from "@material-ui/core/styles";
 
 function App() {
