@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useState} from "react";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import Grid from "@material-ui/core/Grid";
 
 import Project from "./Project";
+import Buttons from "../Buttons";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,6 +20,8 @@ const useStyles = makeStyles((theme) => ({
 
 function ProjectList() {
   const classes = useStyles();
+
+  const [inEditMode, setInEditMode] = useState(false);
 
   const list = [
     {
@@ -45,20 +48,27 @@ function ProjectList() {
   ];
 
   return (
-    <Grid
-      container
-      direction={"column"}
-      className={classes.container}
-    >
-      {
-        list.map((project) => (
-          <Project
-            key={project.id}
-            project={project}
-          />
-        ))
-      }
-    </Grid>
+    <React.Fragment>
+      <Grid
+        container
+        direction={"column"}
+        className={classes.container}
+      >
+        <Buttons
+          inEditMode={inEditMode}
+          setInEditMode={setInEditMode}
+        />
+        {
+          list.map((project) => (
+            <Project
+              key={project.id}
+              project={project}
+              inEditMode={inEditMode}
+            />
+          ))
+        }
+      </Grid>
+    </React.Fragment>
   );
 }
 

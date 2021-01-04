@@ -3,7 +3,7 @@ import React from "react";
 import useTheme from "@material-ui/core/styles/useTheme";
 
 import NavBar from "./NavBar";
-import ProjectList from "./projects";
+import Projects from "./projects";
 
 function App() {
   const theme = useTheme();
@@ -17,7 +17,7 @@ function App() {
       }}
     >
       <NavBar />
-      <ProjectList />
+      <Projects />
     </div>
   );
 }
