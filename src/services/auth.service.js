@@ -14,10 +14,10 @@ export const isAdmin = () => {
 };
 
 const getPostAuthRedirectUrl = () => {
-  const devPostAuthRedirectUrl = 'http://localhost:3000?authSuccess';
-  const prodPostAuthRedirectUrl = 'https://apps.vighnesh153.com?authSuccess';
+  const devPostAuthRedirectUrl = 'http://localhost:3000';
+  const prodPostAuthRedirectUrl = 'https://apps.vighnesh153.com';
   const url = isDev ? devPostAuthRedirectUrl : prodPostAuthRedirectUrl;
-  return encodeURIComponent(url);
+  return encodeURIComponent(url + '?authSuccess');
 };
 
 export const getAuthUrl = () => {
@@ -27,4 +27,8 @@ export const getAuthUrl = () => {
 
   const redirectTo = getPostAuthRedirectUrl();
   return `${url}?redirectTo=${redirectTo}`;
+};
+
+export const loginSuccess = () => {
+  return window.location.search.includes('loginSuccess');
 };

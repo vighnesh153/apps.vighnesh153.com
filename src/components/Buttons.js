@@ -24,8 +24,7 @@ function Buttons({inEditMode, setInEditMode}) {
 
   const onEditClick = () => {
     if (AuthService.isLoggedIn() === false) {
-      // TODO: send to auth.vighnesh153.com
-      const authUrl = AuthService.getAuthUrl();
+      window.location.href = AuthService.getAuthUrl();
       return;
     }
     if (AuthService.isAdmin() === false) {
