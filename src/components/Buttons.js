@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import {useHistory} from "react-router-dom";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -20,7 +21,16 @@ const useStyles = makeStyles((theme) => ({
 
 function Buttons({inEditMode, setInEditMode}) {
   const classes = useStyles();
+  const history = useHistory();
+
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+
+  useEffect(() => {
+    if (AuthService.loginSuccess()) {
+      onEditClick();
+      history.replace('/');
+    }
+  }, [setInEditMode, history]);
 
   const onEditClick = () => {
     if (AuthService.isLoggedIn() === false) {

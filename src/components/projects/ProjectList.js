@@ -1,5 +1,4 @@
-import React, {useEffect, useState} from "react";
-import {useHistory} from "react-router-dom";
+import React, {useState} from "react";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -7,7 +6,6 @@ import Grid from "@material-ui/core/Grid";
 
 import Project from "./Project";
 import Buttons from "../Buttons";
-import * as AuthService from "../../services/auth.service";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -22,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
 
 function ProjectList() {
   const classes = useStyles();
-  const history = useHistory();
 
   const [inEditMode, setInEditMode] = useState(false);
 
@@ -49,13 +46,6 @@ function ProjectList() {
         '*.vighnesh153.com or on vighnesh153.github.io built using React, Material & Nodejs.'
     },
   ];
-
-  useEffect(() => {
-    if (AuthService.loginSuccess() && AuthService.isAdmin()) {
-      setInEditMode(true);
-    }
-    history.replace('/');
-  }, [setInEditMode, history]);
 
   return (
     <React.Fragment>
