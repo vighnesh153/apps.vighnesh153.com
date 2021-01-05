@@ -78,7 +78,7 @@ export default function NavBar() {
               }
             </IconButton>
             <p className={classes.userName}>
-              {currentUser.name || 'User'}
+              {currentUser.name || 'Guest'}
             </p>
           </div>
         </Toolbar>

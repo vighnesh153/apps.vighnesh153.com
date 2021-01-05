@@ -1,12 +1,14 @@
 import React from "react";
 
+import clsx from 'clsx';
+
+import {useForm} from "react-hook-form";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import useTheme from "@material-ui/core/styles/useTheme";
 
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import {FormControl, TextField} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -16,37 +18,71 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.primary.main}`,
   },
-  name: {},
-  url: {
-    color: theme.palette.primary.main,
-    display: 'flex',
-    alignItems: 'center',
+  formControl: {
+    width: '100%',
+  },
+  bottomSpacing: {
+    marginBottom: theme.spacing(2),
   },
 }));
 
-function ProjectEdit({project}) {
+const formControls = [
+  {
+    name: 'name',
+    label: 'Name of App/Project',
+    multiline: false,
+    rows: 1,
+  },
+  {
+    name: 'url',
+    label: 'App/Project URL',
+    multiline: false,
+    rows: 1,
+  },
+  {
+    name: 'description',
+    label: 'App/Project Description',
+    multiline: true,
+    rows: 3,
+  },
+];
+
+function ProjectEdit({project, updateProject}) {
   const classes = useStyles();
-  const theme = useTheme();
+
+  const {register, watch} = useForm({defaultValues: project});
+
+  const onChange = async () => {
+    const newValues = {
+      ...project,
+      ...watch(),
+    };
+    updateProject(newValues);
+  };
 
   return (
-    <Grid item className={classes.container} container justify={"space-between"}>
-      <Typography variant='h5'>
-        {project.name}
-      </Typography>
-      <a
-        className={classes.url}
-        href={project.url}
-        target="_blank"
-        rel="nofollow noreferrer noopener"
-      >
-        {project.url.slice(8)}
-        <OpenInNewIcon
-          style={{
-            width: '1.5rem',
-            marginLeft: theme.spacing(.5)
-          }}
-        />
-      </a>
+    <Grid item className={classes.container} container>
+      <form onChange={onChange}>
+        {
+          formControls.map((formControl) => (
+            <FormControl
+              key={formControl.label}
+              className={clsx(classes.formControl, classes.bottomSpacing)}
+            >
+              <TextField
+                variant={"outlined"}
+                required
+                name={formControl.name}
+                label={formControl.label}
+                inputRef={register({required: true})}
+                multiline={formControl.multiline}
+                rows={formControl.rows}
+                autoComplete="off"
+              />
+            </FormControl>
+          ))
+        }
+      </form>
     </Grid>
   );
 }

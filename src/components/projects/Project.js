@@ -4,12 +4,21 @@ import ProjectEdit from "./ProjectEdit";
 import ProjectShow from "./ProjectShow";
 
 
-function Project({project, inEditMode}) {
-  const Component = inEditMode ? ProjectEdit : ProjectShow;
-
-  return (
-    <Component project={project} />
-  )
+function Project({project, inEditMode, updateProject}) {
+  if (inEditMode) {
+    return (
+      <ProjectEdit
+        project={project}
+        updateProject={updateProject}
+      />
+    );
+  } else {
+    return (
+      <ProjectShow
+        project={project}
+      />
+    );
+  }
 }
 
 Project.defaultProps = {
