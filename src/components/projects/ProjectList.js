@@ -1,5 +1,7 @@
 import React, {useState} from "react";
 
+import clsx from 'clsx';
+
 import Project from "./Project";
 import Buttons from "../Buttons";
 import NoProjectsFound from "./NoProjectsFound";
@@ -8,14 +10,22 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import Grid from "@material-ui/core/Grid";
 
+import {DragDropContext, Droppable} from 'react-beautiful-dnd';
+
 const useStyles = makeStyles((theme) => ({
-  container: {
+  root: {
     width: '97%',
     [theme.breakpoints.up("sm")]: {
       width: '80%',
     },
     maxWidth: 700,
     margin: theme.spacing(5, 'auto'),
+  },
+  container: {
+    paddingTop: theme.spacing(1),
+  },
+  isDraggingOver: {
+    backgroundColor: theme.palette.primary.dark,
   },
 }));
 
@@ -80,30 +90,71 @@ function ProjectList() {
     });
   };
 
+  const onDragEnd = (result) => {
+    const {source, destination} = result;
+
+    if (!destination) {
+      return;
+    }
+
+    if (source.index === destination.index) {
+      return;
+    }
+
+    const projectsListClone = [...projectsList];
+    [projectsListClone[source.index], projectsListClone[destination.index]]
+      = [projectsListClone[destination.index], projectsListClone[source.index]];
+    setProjectsList(projectsListClone);
+  };
+
+  const projectComponentList = projectsList.map((project, projectIndex) => (
+    <Project
+      key={project.id}
+      projectIndex={projectIndex}
+      updateProject={updateProject}
+      project={project}
+      inEditMode={inEditMode}
+    />
+  ));
+
+  const droppableContainer = (provided, snapshot) => (
+    <Grid
+      item container
+      className={clsx({
+        [classes.container]: true,
+        [classes.isDraggingOver]: snapshot.isDraggingOver,
+      })}
+      {...provided.droppableProps}
+      innerRef={provided.innerRef}
+    >
+      {projectComponentList}
+      {provided.placeholder}
+    </Grid>
+  );
+
+  const modificationButtons = (
+    <Buttons
+      inEditMode={inEditMode}
+      setInEditMode={setInEditMode}
+      addNewProject={addNewProject}
+      onSaveClick={onSaveClick}
+    />
+  );
+
   return (
     <React.Fragment>
       <Grid
         container
         direction={"column"}
-        className={classes.container}
+        className={classes.root}
       >
-        <Buttons
-          inEditMode={inEditMode}
-          setInEditMode={setInEditMode}
-          addNewProject={addNewProject}
-          onSaveClick={onSaveClick}
-        />
-        {
-          projectsList.map((project) => (
-            <Project
-              key={project.id}
-              updateProject={updateProject}
-              project={project}
-              inEditMode={inEditMode}
-            />
-          ))
-        }
-        <NoProjectsFound projectsList={projectsList} />
+        {modificationButtons}
+        <DragDropContext onDragEnd={onDragEnd}>
+          <Droppable droppableId={'apps'}>
+            {droppableContainer}
+          </Droppable>
+        </DragDropContext>
+        <NoProjectsFound projectsList={projectsList}/>
       </Grid>
     </React.Fragment>
   );

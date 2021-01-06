@@ -3,20 +3,37 @@ import React from "react";
 import clsx from 'clsx';
 
 import {useForm} from "react-hook-form";
+import {Draggable} from "react-beautiful-dnd";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
-
 import Grid from "@material-ui/core/Grid";
+import FormControl from "@material-ui/core/FormControl";
+import TextField from "@material-ui/core/TextField";
 
-import {FormControl, TextField} from "@material-ui/core";
+import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: '100%',
+    width: '95%',
+    margin: 'auto',
     marginBottom: theme.spacing(2),
-    padding: theme.spacing(2),
+    padding: theme.spacing(2, 1),
     backgroundColor: theme.palette.background.paper,
     border: `1px solid ${theme.palette.primary.main}`,
+  },
+  isDragging: {
+    borderColor: theme.palette.secondary.main,
+    borderWidth: '5px',
+  },
+  formContainer: {
+    width: '91%',
+  },
+  form: {
+    width: '100%',
+  },
+  dragHandle: {
+    width: '9%',
   },
   formControl: {
     width: '100%',
@@ -47,7 +64,7 @@ const formControls = [
   },
 ];
 
-function ProjectEdit({project, updateProject}) {
+function ProjectEdit({project, updateProject, projectIndex}) {
   const classes = useStyles();
 
   const {register, watch} = useForm({defaultValues: project});
@@ -61,29 +78,62 @@ function ProjectEdit({project, updateProject}) {
   };
 
   return (
-    <Grid item className={classes.container} container>
-      <form onChange={onChange}>
-        {
-          formControls.map((formControl) => (
-            <FormControl
-              key={formControl.label}
-              className={clsx(classes.formControl, classes.bottomSpacing)}
+    <Draggable
+      draggableId={project.id.toString()}
+      index={projectIndex}
+    >
+      {
+        (provided, snapshot) => (
+          <Grid
+            item container
+            justify={"space-between"}
+            className={clsx({
+              [classes.container]: true,
+              [classes.isDragging]: snapshot.isDragging,
+            })}
+            {...provided.draggableProps}
+            innerRef={provided.innerRef}
+          >
+            <Grid item className={classes.formContainer}>
+              <form
+                className={classes.form}
+                onChange={onChange}
+              >
+                {
+                  formControls.map((formControl) => (
+                    <FormControl
+                      key={formControl.label}
+                      className={clsx(classes.formControl, classes.bottomSpacing)}
+                    >
+                      <TextField
+                        variant={"outlined"}
+                        color={"primary"}
+                        required
+                        name={formControl.name}
+                        label={formControl.label}
+                        inputRef={register({required: true})}
+                        multiline={formControl.multiline}
+                        rows={formControl.rows}
+                        autoComplete="off"
+                      />
+                    </FormControl>
+                  ))
+                }
+              </form>
+            </Grid>
+            <Grid
+              item container
+              alignItems={"flex-start"} justify={"center"}
+              className={classes.dragHandle}
             >
-              <TextField
-                variant={"outlined"}
-                required
-                name={formControl.name}
-                label={formControl.label}
-                inputRef={register({required: true})}
-                multiline={formControl.multiline}
-                rows={formControl.rows}
-                autoComplete="off"
-              />
-            </FormControl>
-          ))
-        }
-      </form>
-    </Grid>
+              <IconButton {...provided.dragHandleProps}>
+                <DragIndicatorIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+        )
+      }
+    </Draggable>
   );
 }
 

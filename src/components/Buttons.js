@@ -16,7 +16,8 @@ import * as AuthService from "../services/auth.service";
 
 const useStyles = makeStyles((theme) => ({
   buttonContainer: {
-    margin: theme.spacing(1, 0),
+    width: '95%',
+    margin: theme.spacing(1, 'auto'),
   },
   saveEditButton: {
     marginLeft: theme.spacing(1),

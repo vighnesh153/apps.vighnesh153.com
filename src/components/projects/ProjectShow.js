@@ -10,7 +10,8 @@ import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    width: '100%',
+    width: '95%',
+    margin: 'auto',
     marginBottom: theme.spacing(2),
     padding: theme.spacing(2),
     backgroundColor: theme.palette.background.paper,
