@@ -6,7 +6,6 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 
-import Edit from "@material-ui/icons/Edit";
 import Save from "@material-ui/icons/Save";
 
 import * as AuthService from "../services/auth.service";
