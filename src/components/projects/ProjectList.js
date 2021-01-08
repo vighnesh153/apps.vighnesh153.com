@@ -1,16 +1,19 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import Grid from "@material-ui/core/Grid";
 
 import clsx from 'clsx';
+import {DragDropContext, Droppable} from 'react-beautiful-dnd';
 
 import Project from "./Project";
 import Buttons from "../Buttons";
 import NoProjectsFound from "./NoProjectsFound";
+import IsFetching from "./IsFetching";
+import MyAlert from "../Alert";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-
-import Grid from "@material-ui/core/Grid";
-
-import {DragDropContext, Droppable} from 'react-beautiful-dnd';
+import * as ProjectsService from '../../services/projects.service';
+import {apiRequest} from "../../hooks";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,94 +27,74 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(1),
   },
+  alertContainer: {
+    width: '95%',
+    margin: 'auto',
+  },
   isDraggingOver: {
     backgroundColor: theme.palette.primary.dark,
   },
 }));
 
-const hardcodedData = [
-  {
-    id: Math.random(),
-    name: 'Personal Website',
-    url: 'https://vighnesh153.com',
-    description: 'A profile-display web app hosted on Firebase ' +
-      'and made with ❤️ using Angular.'
-  },
-  {
-    id: Math.random(),
-    name: 'Personal Blog',
-    url: 'https://blog.vighnesh153.com',
-    description: 'A place where I write about anything, mostly Technology, ' +
-      'and hosted on Blogger.'
-  },
-  {
-    id: Math.random(),
-    name: 'List of hosted Apps',
-    url: 'https://apps.vighnesh153.com',
-    description: 'A collection of all my apps that are hosted either on ' +
-      '*.vighnesh153.com or on vighnesh153.github.io built using React, Material & Nodejs.'
-  },
-];
-
 function ProjectList() {
   const classes = useStyles();
 
-  const [projectsList, setProjectsList] = useState(hardcodedData);
+  const [projectsList, setProjectsList] = useState([]);
   const [inEditMode, setInEditMode] = useState(false);
 
-  const updateProject = (updatedProject) => {
-    const projectsListClone = projectsList
-      .map((project) =>
-        project.id === updatedProject.id ? updatedProject : project
-      );
-    setProjectsList(projectsListClone);
-  };
+  const [alertObj, setAlertObj] = useState({
+    type: '',
+    title: '',
+    content: ''
+  });
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
-  const addNewProject = () => {
-    const newProject = {
-      id: Math.random(),
-      name: '',
-      url: '',
-      description: '',
-    };
-    const newProjectsList = [
-      newProject,
-      ...projectsList,
-    ];
-    setProjectsList(newProjectsList);
-  };
+  const {data, error, loading, makeRequest} = apiRequest()
 
-  const onSaveClick = async () => {
-    console.log(projectsList);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
-      }, 5000);
-    });
-  };
+  useEffect(() => {
+    makeRequest({ type: 'GET', path: '/apps' });
+  }, [makeRequest]);
+
+  useEffect(() => {
+    if (loading) {
+      setIsAlertOpen(false);
+    }
+  }, [loading]);
+
+  useEffect(() => {
+    if (error !== null) {
+      setAlertObj(error);
+      setIsAlertOpen(true);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (data === 'OK') {
+      setInEditMode(false);
+      return;
+    }
+    if (data !== null) {
+      const sortedProjects = data.sort((p1, p2) => p1.priority - p2.priority);
+      const transformedProjects = sortedProjects.map((p) => ({...p, id: p._id}));
+      setProjectsList(transformedProjects);
+    }
+  }, [data]);
 
   const onDragEnd = (result) => {
-    const {source, destination} = result;
-
-    if (!destination) {
-      return;
+    const {source: src, destination: dest} = result;
+    if (dest && src.index !== dest.index) {
+      const clone = [...projectsList];
+      [clone[src.index], clone[dest.index]] = [clone[dest.index], clone[src.index]];
+      setProjectsList(clone);
     }
-
-    if (source.index === destination.index) {
-      return;
-    }
-
-    const projectsListClone = [...projectsList];
-    [projectsListClone[source.index], projectsListClone[destination.index]]
-      = [projectsListClone[destination.index], projectsListClone[source.index]];
-    setProjectsList(projectsListClone);
   };
 
   const projectComponentList = projectsList.map((project, projectIndex) => (
     <Project
       key={project.id}
       projectIndex={projectIndex}
-      updateProject={updateProject}
+      updateProject={(updatedProject) =>
+        ProjectsService.updateProject(updatedProject, projectsList, setProjectsList)}
       project={project}
       inEditMode={inEditMode}
     />
@@ -134,29 +117,37 @@ function ProjectList() {
 
   const modificationButtons = (
     <Buttons
+      setIsAlertOpen={setIsAlertOpen}
+      setAlertObj={setAlertObj}
+      loading={loading}
       inEditMode={inEditMode}
       setInEditMode={setInEditMode}
-      addNewProject={addNewProject}
-      onSaveClick={onSaveClick}
+      addNewProject={() => ProjectsService.addNewProject(projectsList, setProjectsList)}
+      onSaveClick={() =>
+        ProjectsService.onSaveClick(makeRequest, projectsList)}
     />
   );
 
+  const projectsListDnD = (
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId={'apps'}>
+        {droppableContainer}
+      </Droppable>
+    </DragDropContext>
+  );
+
   return (
-    <React.Fragment>
-      <Grid
-        container
-        direction={"column"}
-        className={classes.root}
-      >
-        {modificationButtons}
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Droppable droppableId={'apps'}>
-            {droppableContainer}
-          </Droppable>
-        </DragDropContext>
-        <NoProjectsFound projectsList={projectsList}/>
-      </Grid>
-    </React.Fragment>
+    <Grid container direction={"column"} className={classes.root}>
+      <MyAlert
+        isOpen={isAlertOpen && !loading}
+        setIsOpen={setIsAlertOpen}
+        alertObj={alertObj}
+      />
+      {modificationButtons}
+      {projectsListDnD}
+      <IsFetching isFetching={loading}/>
+      <NoProjectsFound projectsList={projectsList} isFetching={loading}/>
+    </Grid>
   );
 }
 

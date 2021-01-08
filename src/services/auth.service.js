@@ -1,6 +1,10 @@
 import Cookie from 'js-cookie';
 
-const isDev = window.location.href.startsWith('http://localhost');
+export const isDev = window.location.href.startsWith('http://localhost');
+
+export const apiUrl = isDev ? 'http://localhost:3001' : 'https://api.vighnesh153.com';
+export const clientUrl = isDev ? 'http://localhost:3000' : 'https://apps.vighnesh153.com';
+export const authUrl = isDev ? 'http://localhost:3010' : 'https://auth.vighnesh153.com';
 
 export const isLoggedIn = () => {
   const user = Cookie.get('user');
@@ -14,19 +18,12 @@ export const isAdmin = () => {
 };
 
 const getPostAuthRedirectUrl = () => {
-  const devPostAuthRedirectUrl = 'http://localhost:3000';
-  const prodPostAuthRedirectUrl = 'https://apps.vighnesh153.com';
-  const url = isDev ? devPostAuthRedirectUrl : prodPostAuthRedirectUrl;
-  return encodeURIComponent(url + '?authSuccess');
+  return encodeURIComponent(clientUrl + '?authSuccess');
 };
 
 export const getAuthUrl = () => {
-  const devAuthUrl = 'http://localhost:3010';
-  const prodAuthUrl = 'https://auth.vighnesh153.com';
-  const url = isDev ? devAuthUrl : prodAuthUrl;
-
   const redirectTo = getPostAuthRedirectUrl();
-  return `${url}?redirectTo=${redirectTo}`;
+  return `${authUrl}?redirectTo=${redirectTo}`;
 };
 
 export const loginSuccess = () => {

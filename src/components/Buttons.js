@@ -1,13 +1,10 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {useHistory} from "react-router-dom";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
-
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 
 import Edit from "@material-ui/icons/Edit";
 import Save from "@material-ui/icons/Save";
@@ -25,12 +22,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Buttons(props) {
-  const {inEditMode, setInEditMode, addNewProject} = props;
+  const {inEditMode, setInEditMode, addNewProject, setIsAlertOpen, setAlertObj, loading} = props;
   const classes = useStyles();
   const history = useHistory();
-
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
 
   const onEditClick = useCallback(() => {
     if (AuthService.isLoggedIn() === false) {
@@ -38,36 +32,23 @@ function Buttons(props) {
       return;
     }
     if (AuthService.isAdmin() === false) {
+      setAlertObj({
+        type: 'error',
+        title: 'Unauthorized',
+        content: 'Only Vighnesh Raut is allowed to edit this.'
+      });
       setIsAlertOpen(true);
       return;
     }
     setInEditMode(true);
-  }, [setInEditMode]);
-
-  const onSaveClick = async () => {
-    setIsSaving(true);
-    await props.onSaveClick();
-    setIsSaving(false);
-    setInEditMode(false);
-  };
+  }, [setInEditMode, setAlertObj, setIsAlertOpen]);
 
   useEffect(() => {
     if (AuthService.loginSuccess()) {
       onEditClick();
       history.replace('/');
     }
-  }, [setInEditMode, history, onEditClick]);
-
-  const unauthorizedAlert = isAlertOpen && (
-    <Alert
-      variant="filled"
-      severity="error"
-      onClose={() => setIsAlertOpen(false)}
-    >
-      <AlertTitle><strong>Unauthorized</strong></AlertTitle>
-      <strong>Only Vighnesh Raut is allowed to edit this.</strong>
-    </Alert>
-  );
+  }, [history, onEditClick]);
 
   let addNewAppBtn = null;
   if (inEditMode) {
@@ -84,28 +65,26 @@ function Buttons(props) {
 
   const saveEditBtn = (
     <Button
-      onClick={inEditMode ? onSaveClick : onEditClick}
+      onClick={inEditMode ? props.onSaveClick : onEditClick}
       variant={"contained"}
       color={"primary"}
       className={classes.saveEditButton}
-      disabled={isSaving}
-      endIcon={inEditMode
-        ? (isSaving ? <CircularProgress size={20}/> : <Save/>)
-        : <Edit/>
-      }
+      disabled={loading}
+      endIcon={loading ? <CircularProgress size={20}/> : <Save/>}
     >
       {inEditMode ? 'Save' : 'Edit'}
     </Button>
   );
 
+  if (loading && !inEditMode) {
+    return null;
+  }
+
   return (
-    <React.Fragment>
-      {unauthorizedAlert}
-      <Grid item container justify={"flex-end"} className={classes.buttonContainer}>
-        {addNewAppBtn}
-        {saveEditBtn}
-      </Grid>
-    </React.Fragment>
+    <Grid item container justify={"flex-end"} className={classes.buttonContainer}>
+      {addNewAppBtn}
+      {saveEditBtn}
+    </Grid>
   );
 }
 
