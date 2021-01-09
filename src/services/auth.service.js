@@ -18,7 +18,7 @@ export const isAdmin = () => {
 };
 
 const getPostAuthRedirectUrl = () => {
-  return encodeURIComponent(clientUrl + '?authSuccess');
+  return encodeURIComponent(clientUrl + '?loginSuccess');
 };
 
 export const getAuthUrl = () => {

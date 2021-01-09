@@ -7,6 +7,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 
 import Save from "@material-ui/icons/Save";
+import EditIcon from "@material-ui/icons/Edit";
 
 import * as AuthService from "../services/auth.service";
 
@@ -69,7 +70,10 @@ function Buttons(props) {
       color={"primary"}
       className={classes.saveEditButton}
       disabled={loading}
-      endIcon={loading ? <CircularProgress size={20}/> : <Save/>}
+      endIcon={loading
+        ? <CircularProgress size={20}/>
+        : (inEditMode ? <Save/> : <EditIcon/>)
+      }
     >
       {inEditMode ? 'Save' : 'Edit'}
     </Button>
