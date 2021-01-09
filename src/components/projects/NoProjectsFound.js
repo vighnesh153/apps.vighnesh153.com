@@ -10,6 +10,8 @@ function NoProjectsFound({projectsList, isFetching}) {
   const theme = useTheme();
 
   const style = {
+    width: '95%',
+    margin: 'auto',
     border: `1px solid ${theme.palette.primary.main}`,
   };
 
