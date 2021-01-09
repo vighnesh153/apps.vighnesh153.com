@@ -20,6 +20,8 @@ function ApiRequest() {
   const [doRequest, setDoRequest] = useState(false);
 
   const makeRequest = useCallback((config) => {
+    setData(null);
+    setError(null);
     setDoRequest(true);
     setConfig(config || {})
   }, []);
