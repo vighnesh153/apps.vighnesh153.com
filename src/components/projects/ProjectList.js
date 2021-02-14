@@ -84,7 +84,8 @@ function ProjectList() {
     const {source: src, destination: dest} = result;
     if (dest && src.index !== dest.index) {
       const clone = [...projectsList];
-      const dragEl = clone.splice(src.index, 1);
+      const dragEl = clone[src.index];
+      clone.splice(src.index, 1);
       clone.splice(dest.index, 0, dragEl);
       setProjectsList(clone);
     }
