@@ -1,3 +1,5 @@
+import ValidationsStore from "../stores/Validations";
+
 export const updateProject = (updatedProject, projectsList, setProjectsList) => {
   const projectsListClone = projectsList
     .map((project) =>
@@ -21,5 +23,6 @@ export const addNewProject = (projectsList, setProjectsList) => {
 };
 
 export const onSaveClick = (makeRequest, projectsList) => {
+  ValidationsStore.triggerValidations.next();
   makeRequest({ type: 'PUT', path: '/apps', data: projectsList });
 };

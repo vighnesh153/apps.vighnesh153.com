@@ -1,4 +1,6 @@
-import React from "react";
+import React, {useEffect} from "react";
+
+import ValidationsStore from "../../stores/Validations";
 
 import clsx from 'clsx';
 
@@ -67,7 +69,10 @@ const formControls = [
 function ProjectEdit({project, updateProject, projectIndex}) {
   const classes = useStyles();
 
-  const {register, watch} = useForm({defaultValues: project});
+  const {register, watch, errors, trigger} = useForm({
+    defaultValues: project, 
+    mode: 'onTouched',  // trigger validation mode: https://react-hook-form.com/api
+  });
 
   const onChange = async () => {
     const newValues = {
@@ -76,6 +81,15 @@ function ProjectEdit({project, updateProject, projectIndex}) {
     };
     updateProject(newValues);
   };
+
+  useEffect(() => {
+    const subscription = ValidationsStore.triggerValidations.subscribe(() => {
+      trigger();
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [trigger]);
 
   return (
     <Draggable
@@ -111,10 +125,12 @@ function ProjectEdit({project, updateProject, projectIndex}) {
                         required
                         name={formControl.name}
                         label={formControl.label}
-                        inputRef={register({required: true})}
+                        inputRef={register({required: 'This field is required.', minLength: 1})}
                         multiline={formControl.multiline}
                         rows={formControl.rows}
                         autoComplete="off"
+                        error={Boolean(errors[formControl.name] && errors[formControl.name].message)}
+                        helperText={(errors[formControl.name] && errors[formControl.name].message) || ""}
                       />
                     </FormControl>
                   ))
