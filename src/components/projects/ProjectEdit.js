@@ -13,6 +13,7 @@ import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 
 import DragIndicatorIcon from '@material-ui/icons/DragIndicator';
+import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from "@material-ui/core/IconButton";
 
 const useStyles = makeStyles((theme) => ({
@@ -66,11 +67,11 @@ const formControls = [
   },
 ];
 
-function ProjectEdit({project, updateProject, projectIndex}) {
+function ProjectEdit({project, updateProject, projectIndex, deleteProject}) {
   const classes = useStyles();
 
   const {register, watch, errors, trigger} = useForm({
-    defaultValues: project, 
+    defaultValues: project,
     mode: 'onTouched',  // trigger validation mode: https://react-hook-form.com/api
   });
 
@@ -80,6 +81,10 @@ function ProjectEdit({project, updateProject, projectIndex}) {
       ...watch(),
     };
     updateProject(newValues);
+  };
+
+  const deleteProjectLocal = () => {
+    deleteProject(project.id.toString());
   };
 
   useEffect(() => {
@@ -138,13 +143,20 @@ function ProjectEdit({project, updateProject, projectIndex}) {
               </form>
             </Grid>
             <Grid
-              item container
-              alignItems={"flex-start"} justify={"center"}
+              item container direction={"column"}
+              alignItems={"center"} justify={"flex-start"}
               className={classes.dragHandle}
             >
-              <IconButton {...provided.dragHandleProps}>
-                <DragIndicatorIcon />
-              </IconButton>
+              <Grid item>
+                <IconButton {...provided.dragHandleProps}>
+                  <DragIndicatorIcon />
+                </IconButton>
+              </Grid>
+              <Grid item>
+                <IconButton onClick={deleteProjectLocal}>
+                  <DeleteIcon color={"error"} />
+                </IconButton>
+              </Grid>
             </Grid>
           </Grid>
         )

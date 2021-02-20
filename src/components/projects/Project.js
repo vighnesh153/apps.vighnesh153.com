@@ -4,13 +4,14 @@ import ProjectEdit from "./ProjectEdit";
 import ProjectShow from "./ProjectShow";
 
 
-function Project({project, inEditMode, updateProject, projectIndex}) {
+function Project({project, inEditMode, updateProject, projectIndex, deleteProject}) {
   if (inEditMode) {
     return (
       <ProjectEdit
         project={project}
         projectIndex={projectIndex}
         updateProject={updateProject}
+        deleteProject={deleteProject}
       />
     );
   } else {

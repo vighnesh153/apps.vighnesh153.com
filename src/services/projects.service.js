@@ -8,6 +8,11 @@ export const updateProject = (updatedProject, projectsList, setProjectsList) => 
   setProjectsList(projectsListClone);
 };
 
+export const deleteProject = (projectId, projectsList, setProjectsList) => {
+  const projectsListClone = projectsList.filter((project) => `${project.id}` !== `${projectId}`);
+  setProjectsList(projectsListClone);
+};
+
 export const addNewProject = (projectsList, setProjectsList) => {
   const newProject = {
     id: Math.random(),
@@ -24,5 +29,5 @@ export const addNewProject = (projectsList, setProjectsList) => {
 
 export const onSaveClick = (makeRequest, projectsList) => {
   ValidationsStore.triggerValidations.next();
-  makeRequest({ type: 'PUT', path: '/apps', data: projectsList });
+  makeRequest({type: 'PUT', path: '/apps', data: projectsList});
 };

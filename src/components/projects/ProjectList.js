@@ -95,6 +95,8 @@ function ProjectList() {
     <Project
       key={project.id}
       projectIndex={projectIndex}
+      deleteProject={(projectId) =>
+        ProjectsService.deleteProject(projectId, projectsList, setProjectsList)}
       updateProject={(updatedProject) =>
         ProjectsService.updateProject(updatedProject, projectsList, setProjectsList)}
       project={project}
